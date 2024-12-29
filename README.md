@@ -1,75 +1,18 @@
-# Nuxt UI Minimal Starter
+# ZassPrint Thesis Order
 
-Look at [Nuxt docs](https://nuxt.com/docs/getting-started/introduction) and [Nuxt UI docs](https://ui.nuxt.com) to learn more.
+A Nuxt app for ZassPrint to keep track of customer thesis hard/soft bound orders.
 
-## Setup
+## Features
 
-Make sure to install the dependencies:
+- Fill in thesis order form
+- Check order status
+- Keep track of all orders via the dashboard (admin only)
+- Edit prices (admin only)
+- Update order status via the dashboard (admin only)
+- Delete orders via the dashboard (admin only)
 
-```bash
-# npm
-npm install
+## Tech Stack
 
-# pnpm
-pnpm install
+**Client:** Nuxt, TailwindCSS
 
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+**Server:** Supabase
