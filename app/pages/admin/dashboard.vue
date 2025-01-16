@@ -31,7 +31,7 @@ const filtered = ref("");
 const page = ref(1);
 const pageCount = 10;
 
-const { data, refresh } = await useFetch("/api/thesisOrder", {
+const { data, status, refresh } = await useLazyFetch("/api/thesisOrder", {
   headers: useRequestHeaders(["cookie"]),
 });
 
@@ -170,7 +170,12 @@ async function deleteOrder(orderNo: string) {
       placeholder="Filter orders..."
     />
 
-    <UTable class="rounded-md border bg-white" :rows :columns>
+    <UTable
+      :loading="status === 'pending'"
+      class="rounded-md border bg-white"
+      :rows
+      :columns
+    >
       <template #receipt-data="{ row }">
         <UButton
           color="gray"

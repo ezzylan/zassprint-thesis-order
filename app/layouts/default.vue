@@ -138,7 +138,7 @@ const items = [
     </div>
   </UModal>
 
-  <CheckOrder v-model="isStatusOpen" />
+  <LazyCheckOrder v-model="isStatusOpen" />
 
-  <EditPrices v-model="isEditPricesOpen" />
+  <LazyEditPrices v-model="isEditPricesOpen" />
 </template>
