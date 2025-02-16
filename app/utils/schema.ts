@@ -12,7 +12,7 @@ export const thesisOrderSchema = z.object({
   cover_color: z.string({ required_error: "Please select a cover color" }),
   thesis_title: z.string(),
   faculty: z.string(),
-  year: z.coerce.number().int().gte(2024).lte(2099),
+  year: z.coerce.number().int().gte(2025).lte(2099),
   study_acronym: z.string(),
   matrix_num: z.string().min(8),
   color_pages: z.coerce.number().int().nonnegative(),

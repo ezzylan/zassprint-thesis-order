@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import { loginSchema } from "#imports";
-
 useHead({ title: "Login - ZassPrint Thesis Order" });
 
-const state = reactive({
+const { fetch: refreshSession } = useUserSession();
+
+const credentials = reactive({
   email: "",
   password: "",
 });
 
-const supabase = useSupabaseClient();
 const form = ref();
 const toast = useToast();
 
 async function signIn() {
-  const { error } = await supabase.auth.signInWithPassword({
-    email: state.email,
-    password: state.password,
-  });
-
-  if (error) {
-    toast.add({
-      title: error.name,
-      description: error.message,
-      icon: "i-heroicons-x-circle",
-      color: "red",
-    });
-  } else {
-    return navigateTo("/admin/dashboard");
-  }
+  $fetch("/api/login", {
+    method: "POST",
+    body: credentials,
+  })
+    .then(async () => {
+      await refreshSession();
+      await navigateTo("/admin/dashboard");
+    })
+    .catch((error) =>
+      toast.add({
+        title: error.name,
+        description: error.message,
+        icon: "i-heroicons-x-circle",
+        color: "red",
+      }),
+    );
 }
 </script>
 
@@ -46,18 +46,22 @@ async function signIn() {
     <UForm
       ref="form"
       :schema="loginSchema"
-      :state="state"
+      :state="credentials"
       class="w-max space-y-6 md:w-96"
       @submit="signIn"
     >
       <div class="space-y-4">
         <UFormGroup name="email">
-          <UInput v-model="state.email" placeholder="Email address" required />
+          <UInput
+            v-model="credentials.email"
+            placeholder="Email address"
+            required
+          />
         </UFormGroup>
 
         <UFormGroup name="password">
           <UInput
-            v-model="state.password"
+            v-model="credentials.password"
             type="password"
             placeholder="Password"
             required

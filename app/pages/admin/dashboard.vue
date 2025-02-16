@@ -2,6 +2,8 @@
 import { format } from "date-fns";
 import type { z } from "zod";
 
+definePageMeta({ middleware: ["auth"] });
+
 useHead({ title: "Dashboard - ZassPrint Thesis Order" });
 
 const columns = [

@@ -2,18 +2,13 @@
 export default defineNuxtConfig({
   future: { compatibilityVersion: 4 },
   devtools: { enabled: true },
-  modules: ["@nuxt/ui", "@nuxtjs/supabase"],
+  modules: ["@nuxt/ui", "@nuxtjs/supabase", "nuxt-auth-utils"],
   compatibilityDate: "2024-07-17",
   colorMode: { preference: "light" },
   runtimeConfig: {
     telegramBotApiToken: process.env.TELEGRAM_BOT_API_TOKEN,
-  },
-  supabase: {
-    redirectOptions: {
-      login: "/login",
-      callback: "/confirm",
-      include: ["/admin/*"],
-    },
+    adminEmail: process.env.ADMIN_EMAIL,
+    adminPassword: process.env.ADMIN_PASSWORD,
   },
   routeRules: {
     "/": { prerender: true },

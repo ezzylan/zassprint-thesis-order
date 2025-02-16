@@ -1,7 +1,7 @@
 export default defineNuxtRouteMiddleware((to, _from) => {
-  const session = useSupabaseSession();
+  const { loggedIn } = useUserSession();
 
-  if (!session.value) {
+  if (!loggedIn.value) {
     return navigateTo("/login");
   }
 });
