@@ -12,14 +12,17 @@
   "devDependencies": {
     "@nuxt/devtools": "latest",
     "@nuxt/ui": "^2.21.0",
-    "@nuxtjs/supabase": "^1.4.6",
+    "drizzle-kit": "^0.30.5",
     "nuxt": "3.15.4",
-    "prettier": "^3.5.1",
+    "nuxt-auth-utils": "0.5.16",
+    "prettier": "^3.5.2",
     "prettier-plugin-tailwindcss": "^0.6.11"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^0.10.4",
     "change-case": "^5.4.4",
     "date-fns": "^4.1.0",
+    "drizzle-orm": "^0.40.0",
     "pdf-lib": "^1.17.1",
     "v-calendar": "^3.1.2",
     "zod": "^3.24.2"

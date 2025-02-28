@@ -15,4 +15,4 @@ A Nuxt app for ZassPrint to keep track of customer thesis hard/soft bound orders
 
 **Client:** Nuxt, TailwindCSS
 
-**Server:** Supabase
+**Server:** Neon (PostgreSQL)

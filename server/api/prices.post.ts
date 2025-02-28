@@ -1,40 +1,34 @@
-import { serverSupabaseClient } from "#supabase/server";
 import { pricesSchema } from "~/utils/schema";
-import { Database } from "~~/types/database.types";
 
 export default defineEventHandler(async (event) => {
   const result = await readValidatedBody(event, (body) =>
-    pricesSchema.safeParse(body),
+    pricesSchema.parse(body),
   );
 
-  if (!result.success) throw result.error.issues;
-
-  const client = await serverSupabaseClient<Database>(event);
-
   await Promise.all([
-    client
-      .from("prices")
-      .update({ amount: result.data.blackWhite })
-      .eq("name", "blackWhite"),
-    client
-      .from("prices")
-      .update({ amount: result.data.color })
-      .eq("name", "color"),
-    client
-      .from("prices")
-      .update({ amount: result.data.binding })
-      .eq("name", "hardSoftBinding"),
-    client
-      .from("prices")
-      .update({ amount: result.data.stickerLabel })
-      .eq("name", "stickerLabel"),
-    client
-      .from("prices")
-      .update({ amount: result.data.paperLabel })
-      .eq("name", "paperLabel"),
-    client
-      .from("prices")
-      .update({ amount: result.data.delivery })
-      .eq("name", "delivery"),
+    await useDrizzle()
+      .update(tables.prices)
+      .set({ amount: result.blackWhite })
+      .where(eq(tables.prices.name, "blackWhite")),
+    await useDrizzle()
+      .update(tables.prices)
+      .set({ amount: result.color })
+      .where(eq(tables.prices.name, "color")),
+    await useDrizzle()
+      .update(tables.prices)
+      .set({ amount: result.binding })
+      .where(eq(tables.prices.name, "hardSoftBinding")),
+    await useDrizzle()
+      .update(tables.prices)
+      .set({ amount: result.stickerLabel })
+      .where(eq(tables.prices.name, "stickerLabel")),
+    await useDrizzle()
+      .update(tables.prices)
+      .set({ amount: result.paperLabel })
+      .where(eq(tables.prices.name, "paperLabel")),
+    await useDrizzle()
+      .update(tables.prices)
+      .set({ amount: result.delivery })
+      .where(eq(tables.prices.name, "delivery")),
   ]);
 });

@@ -7,22 +7,22 @@ useHead({ title: "ZassPrint Thesis Order" });
 
 const state = reactive({
   name: undefined,
-  phone_num: undefined,
-  thesis_type: undefined,
-  cover_color: undefined,
-  thesis_title: undefined,
+  phoneNumber: undefined,
+  thesisType: undefined,
+  coverColor: undefined,
+  thesisTitle: undefined,
   faculty: undefined,
   year: undefined,
-  study_acronym: undefined,
-  matrix_num: undefined,
-  color_pages: undefined,
-  black_white_pages: undefined,
+  studyAcronym: undefined,
+  matrixNumber: undefined,
+  colorPages: undefined,
+  blackWhitePages: undefined,
   copies: undefined,
-  cd_burn: false,
-  cd_label: undefined,
-  cd_copies: undefined,
-  collection_date: new Date(),
-  collection_method: undefined,
+  cdBurn: false,
+  cdLabel: undefined,
+  cdCopies: undefined,
+  collectionDate: new Date(),
+  collectionMethod: undefined,
   address: undefined,
 });
 
@@ -42,23 +42,23 @@ async function onSubmit() {
       method: "POST",
       body: {
         name: state.name,
-        phone_num: state.phone_num,
-        thesis_type: state.thesis_type,
-        cover_color: state.cover_color,
-        thesis_title: state.thesis_title,
+        phoneNumber: state.phoneNumber,
+        thesisType: state.thesisType,
+        coverColor: state.coverColor,
+        thesisTitle: state.thesisTitle,
         faculty: state.faculty,
         year: state.year,
-        study_acronym: state.study_acronym,
-        matrix_num: state.matrix_num,
-        color_pages: state.color_pages,
-        black_white_pages: state.black_white_pages,
+        studyAcronym: state.studyAcronym,
+        matrixNumber: state.matrixNumber,
+        colorPages: state.colorPages,
+        blackWhitePages: state.blackWhitePages,
         copies: state.copies,
-        cd_label: state.cd_burn ? state.cd_label : undefined,
-        cd_copies: state.cd_burn ? state.cd_copies : undefined,
-        collection_date: state.collection_date,
-        collection_method: state.collection_method,
+        cdLabel: state.cdBurn ? state.cdLabel : undefined,
+        cdCopies: state.cdBurn ? state.cdCopies : undefined,
+        collectionDate: state.collectionDate,
+        collectionMethod: state.collectionMethod,
         address:
-          state.collection_method === "Delivery" ? state.address : undefined,
+          state.collectionMethod === "Delivery" ? state.address : undefined,
       },
     });
 
@@ -112,20 +112,20 @@ async function onSubmit() {
           <UFormGroup label="Full Name" name="name" required>
             <UInput v-model="state.name" />
           </UFormGroup>
-          <UFormGroup label="Phone Number" name="phone_num" required>
-            <UInput v-model="state.phone_num" type="tel" />
+          <UFormGroup label="Phone Number" name="phoneNumber" required>
+            <UInput v-model="state.phoneNumber" type="tel" />
           </UFormGroup>
-          <UFormGroup label="Matrix Number" name="matrix_num" required>
-            <UInput v-model="state.matrix_num" />
+          <UFormGroup label="Matrix Number" name="matrixNumber" required>
+            <UInput v-model="state.matrixNumber" />
           </UFormGroup>
         </div>
 
         <UDivider class="my-6" />
 
         <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
-          <UFormGroup label="Type of Thesis" name="thesis_type" required>
+          <UFormGroup label="Type of Thesis" name="thesisType" required>
             <USelectMenu
-              v-model="state.thesis_type"
+              v-model="state.thesisType"
               :options="[
                 'Hard Cover',
                 'Soft Cover',
@@ -135,9 +135,9 @@ async function onSubmit() {
               placeholder="Select thesis type"
             />
           </UFormGroup>
-          <UFormGroup label="Cover Color" name="cover_color" required>
+          <UFormGroup label="Cover Color" name="coverColor" required>
             <USelectMenu
-              v-model="state.cover_color"
+              v-model="state.coverColor"
               :options="[
                 'Research Report (Navy Blue)',
                 'Dissertation/Thesis (Dark Red/Maroon)',
@@ -153,38 +153,32 @@ async function onSubmit() {
         <UDivider class="my-6" />
 
         <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
-          <UFormGroup label="Thesis Title" name="thesis_title" required>
-            <UInput v-model="state.thesis_title" />
+          <UFormGroup label="Thesis Title" name="thesisTitle" required>
+            <UInput v-model="state.thesisTitle" />
           </UFormGroup>
           <UFormGroup label="Faculty" name="faculty" required>
             <UInput v-model="state.faculty" />
           </UFormGroup>
-          <UFormGroup
-            label="Year"
-            name="year"
-            type="number"
-            min="2023"
-            required
-          >
-            <UInput v-model="state.year" />
+          <UFormGroup label="Year" name="year" required>
+            <UInput v-model="state.year" type="number" min="2025" />
           </UFormGroup>
-          <UFormGroup label="Study Acronym" name="study_acronym" required>
-            <UInput v-model="state.study_acronym" />
+          <UFormGroup label="Study Acronym" name="studyAcronym" required>
+            <UInput v-model="state.studyAcronym" />
           </UFormGroup>
         </div>
 
         <UDivider class="my-6" />
 
         <div class="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-4">
-          <UFormGroup label="Color Pages" name="color_pages" required>
-            <UInput v-model="state.color_pages" type="number" min="0" />
+          <UFormGroup label="Color Pages" name="colorPages" required>
+            <UInput v-model="state.colorPages" type="number" min="0" />
           </UFormGroup>
           <UFormGroup
             label="Black & White Pages"
-            name="black_white_pages"
+            name="blackWhitePages"
             required
           >
-            <UInput v-model="state.black_white_pages" type="number" min="0" />
+            <UInput v-model="state.blackWhitePages" type="number" min="0" />
           </UFormGroup>
           <UFormGroup label="Copies" name="copies" required>
             <UInput v-model="state.copies" type="number" min="1" />
@@ -193,49 +187,53 @@ async function onSubmit() {
 
         <UDivider class="my-6" />
 
-        <UFormGroup name="cd_burn">
-          <UCheckbox v-model="state.cd_burn" label="CD Burn" />
+        <UFormGroup name="cdBurn">
+          <UCheckbox v-model="state.cdBurn" label="CD Burn" />
         </UFormGroup>
 
         <div
-          v-if="state.cd_burn"
+          v-if="state.cdBurn"
           class="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4"
         >
-          <UFormGroup label="CD Label" name="cd_label">
+          <UFormGroup label="CD Label" name="cdLabel">
             <USelectMenu
-              v-model="state.cd_label"
+              v-model="state.cdLabel"
               :options="['Sticker Label', 'Paper Label']"
               placeholder="Select CD label"
             />
           </UFormGroup>
-          <UFormGroup label="Number of CD Copies" name="cd_copies">
-            <UInput v-model="state.cd_copies" type="number" min="0" />
+          <UFormGroup label="Number of CD Copies" name="cdCopies">
+            <UInput v-model="state.cdCopies" type="number" min="0" />
           </UFormGroup>
         </div>
 
         <UDivider class="my-6" />
 
         <div class="mb-3 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
-          <UFormGroup label="Collection Date" name="collection_date" required>
+          <UFormGroup label="Collection Date" name="collectionDate" required>
             <UPopover :popper="{ placement: 'top-start' }">
               <UButton
                 variant="outline"
                 icon="i-heroicons-calendar-days-20-solid"
-                :label="format(state.collection_date, 'd MMM, yyy')"
+                :label="format(state.collectionDate, 'd MMM, yyy')"
               />
 
               <template #panel="{ close }">
                 <DatePicker
-                  v-model="state.collection_date"
+                  v-model="state.collectionDate"
                   is-required
                   @close="close"
                 />
               </template>
             </UPopover>
           </UFormGroup>
-          <UFormGroup label="Collection Method" name="collection_method">
+          <UFormGroup
+            label="Collection Method"
+            name="collectionMethod"
+            required
+          >
             <USelectMenu
-              v-model="state.collection_method"
+              v-model="state.collectionMethod"
               :options="['Delivery', 'Pick Up (Partnership Shop at Serdang)']"
               placeholder="Select collection method"
             />
@@ -243,7 +241,7 @@ async function onSubmit() {
         </div>
 
         <UFormGroup
-          v-if="state.collection_method === 'Delivery'"
+          v-if="state.collectionMethod === 'Delivery'"
           label="Address"
           name="address"
         >

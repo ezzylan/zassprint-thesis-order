@@ -1,6 +1,5 @@
 <script setup lang="ts">
-const supabase = useSupabaseClient();
-const user = useSupabaseUser();
+const { user, clear: clearSession } = useUserSession();
 
 const { data } = await useFetch("/api/prices");
 const prices = data.value ?? [];
@@ -37,9 +36,8 @@ const items = [
       label: "Logout",
       icon: "i-heroicons-arrow-right-on-rectangle-20-solid",
       click: async () => {
-        const { error } = await supabase.auth.signOut();
-        if (error) console.error(error);
-        else navigateTo("/");
+        await clearSession();
+        await navigateTo("/");
       },
     },
   ],
@@ -69,7 +67,9 @@ const items = [
             <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">
               {{ user.email }}
             </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">Superadmin</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              {{ user.name }}
+            </p>
           </div>
         </UButton>
       </UDropdown>
