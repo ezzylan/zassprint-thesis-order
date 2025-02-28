@@ -16,6 +16,7 @@ export default defineEventHandler(async (event) => {
     });
     return {};
   }
+
   throw createError({
     statusCode: 401,
     message: "Bad credentials",

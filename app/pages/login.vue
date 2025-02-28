@@ -11,7 +11,7 @@ const credentials = reactive({
 const form = ref();
 const toast = useToast();
 
-async function signIn() {
+async function login() {
   $fetch("/api/login", {
     method: "POST",
     body: credentials,
@@ -48,7 +48,7 @@ async function signIn() {
       :schema="loginSchema"
       :state="credentials"
       class="w-max space-y-6 md:w-96"
-      @submit="signIn"
+      @submit="login"
     >
       <div class="space-y-4">
         <UFormGroup name="email">

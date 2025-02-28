@@ -7,24 +7,24 @@ export const loginSchema = z.object({
 
 export const thesisOrderSchema = z.object({
   name: z.string(),
-  phone_num: z.string().min(10),
-  thesis_type: z.string({ required_error: "Please select a thesis type" }),
-  cover_color: z.string({ required_error: "Please select a cover color" }),
-  thesis_title: z.string(),
+  phoneNumber: z.string().min(10),
+  thesisType: z.string({ required_error: "Please select a thesis type" }),
+  coverColor: z.string({ required_error: "Please select a cover color" }),
+  thesisTitle: z.string(),
   faculty: z.string(),
-  year: z.coerce.number().int().gte(2025).lte(2099),
-  study_acronym: z.string(),
-  matrix_num: z.string().min(8),
-  color_pages: z.coerce.number().int().nonnegative(),
-  black_white_pages: z.coerce.number().int().nonnegative(),
+  year: z.coerce.number().int().gte(2025),
+  studyAcronym: z.string(),
+  matrixNumber: z.string().min(8),
+  colorPages: z.coerce.number().int().nonnegative(),
+  blackWhitePages: z.coerce.number().int().nonnegative(),
   copies: z.coerce.number().int().positive().default(1),
-  cd_burn: z.boolean().default(false),
-  cd_label: z.string().optional(),
-  cd_copies: z.coerce.number().int().nonnegative().optional(),
-  collection_date: z.coerce
+  cdBurn: z.boolean().default(false),
+  cdLabel: z.string().optional(),
+  cdCopies: z.coerce.number().int().nonnegative().optional(),
+  collectionDate: z.coerce
     .date()
     .refine((v) => v, { message: "Please select a collection date." }),
-  collection_method: z.string({
+  collectionMethod: z.string({
     required_error: "Please select a collection method",
   }),
   address: z.string().optional(),

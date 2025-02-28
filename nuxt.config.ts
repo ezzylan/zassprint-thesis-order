@@ -14,6 +14,9 @@ export default defineNuxtConfig({
     "/": { prerender: true },
     "/admin/**": { ssr: false },
   },
+  supabase: {
+    redirect: false,
+  },
   app: {
     head: {
       link: [

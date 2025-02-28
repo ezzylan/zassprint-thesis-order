@@ -1,55 +1,57 @@
-import { serverSupabaseClient } from "#supabase/server";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { useDateFormat, useNow } from "@vueuse/core";
 import { capitalCase } from "change-case";
 import { addMonths } from "date-fns";
 import { z } from "zod";
 import { thesisOrderSchema } from "~/utils/schema";
-import { Database } from "~~/types/database.types";
 
 const now = useNow();
 
-const countExistingOrders = async (client: SupabaseClient<Database>) => {
-  const { data } = await client
-    .from("thesis_orders")
-    .select("order_no")
-    .order("order_no", { ascending: true })
-    .gte("created_at", `${useDateFormat(now, "YYYY-MM").value}-01`)
-    .lt(
-      "created_at",
-      `${useDateFormat(addMonths(now.value, 1), "YYYY-MM").value}-01`,
-  );
+const countExistingOrders = async () => {
+  const thisMonth = useDateFormat(now, "YYYY-MM").value;
+  const nextMonth = useDateFormat(addMonths(now.value, 1), "YYYY-MM").value;
 
-  return data?.length === 0
-    ? `${useDateFormat(now, "YYMM")}001`
+  const data = await useDrizzle()
+    .select({ order_no: tables.thesisOrders.orderNo })
+    .from(tables.thesisOrders)
+    .orderBy(tables.thesisOrders.createdAt)
+    .where(
+      and(
+        gte(tables.thesisOrders.createdAt, new Date(thisMonth)),
+        lt(tables.thesisOrders.createdAt, new Date(nextMonth)),
+      ),
+    );
+
+  return data.length === 0
+    ? `${useDateFormat(now, "YYMM").value}001`
     : (Number(data?.pop()?.order_no) + 1).toString();
 };
 
 const insertDatabase = async (
-  client: SupabaseClient<Database>,
   data: z.output<typeof thesisOrderSchema>,
   orderNo: string,
 ) => {
-  await client.from("thesis_orders").insert({
-    name: capitalCase(data.name),
-    phone_num: data.phone_num,
-    matrix_num: data.matrix_num,
-    thesis_type: data.thesis_type,
-    cover_color: data.cover_color,
-    thesis_title: data.thesis_title,
-    faculty: data.faculty,
-    year: data.year,
-    study_acronym: data.study_acronym,
-    color_pages: data.color_pages,
-    black_white_pages: data.black_white_pages,
-    copies: data.copies,
-    cd_label: data.cd_label,
-    cd_copies: data.cd_copies,
-    collection_date: data.collection_date.toISOString(),
-    collection_method: data.collection_method,
-    address: data.address,
-    order_no: orderNo,
-  });
+  await useDrizzle()
+    .insert(tables.thesisOrders)
+    .values({
+      name: capitalCase(data.name),
+      phoneNumber: data.phoneNumber,
+      matrixNumber: data.matrixNumber,
+      thesisType: data.thesisType,
+      coverColor: data.coverColor,
+      thesisTitle: data.thesisTitle,
+      faculty: data.faculty,
+      year: data.year,
+      studyAcronym: data.studyAcronym,
+      colorPages: data.colorPages,
+      blackWhitePages: data.blackWhitePages,
+      copies: data.copies,
+      cdLabel: data.cdLabel,
+      cdCopies: data.cdCopies,
+      collectionDate: data.collectionDate.toISOString(),
+      collectionMethod: data.collectionMethod,
+      address: data.address,
+      orderNo: orderNo,
+    });
 };
 
 const { telegramBotApiToken } = useRuntimeConfig();
@@ -78,16 +80,13 @@ const sendTeleBotAlert = async (orderNo: string, name: string) => {
 
 export default defineEventHandler(async (event) => {
   const result = await readValidatedBody(event, (body) =>
-    thesisOrderSchema.safeParse(body),
+    thesisOrderSchema.parse(body),
   );
 
-  if (!result.success) throw result.error.issues;
+  const orderNo = await countExistingOrders();
 
-  const client = await serverSupabaseClient<Database>(event);
-  const orderNo = await countExistingOrders(client);
-
-  await insertDatabase(client, result.data, orderNo);
-  await sendTeleBotAlert(orderNo, result.data.name);
+  await insertDatabase(result, orderNo);
+  await sendTeleBotAlert(orderNo, result.name);
 
   return orderNo;
 });

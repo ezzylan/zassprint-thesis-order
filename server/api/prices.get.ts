@@ -1,10 +1,5 @@
-import { serverSupabaseClient } from "#supabase/server";
-import { Database } from "~~/types/database.types";
-
-export default defineEventHandler(async (event) => {
-  const client = await serverSupabaseClient<Database>(event);
-
-  const { data } = await client.from("prices").select("name, amount");
-
-  return data ?? [];
+export default defineEventHandler(async () => {
+  return await useDrizzle()
+    .select({ name: tables.prices.name, amount: tables.prices.amount })
+    .from(tables.prices);
 });

@@ -2,13 +2,23 @@
 import { format } from "date-fns";
 import type { z } from "zod";
 
-definePageMeta({ middleware: ["auth"] });
+definePageMeta({
+  middleware: [
+    function () {
+      const { loggedIn } = useUserSession();
+
+      if (!loggedIn.value) {
+        return navigateTo("/login");
+      }
+    },
+  ],
+});
 
 useHead({ title: "Dashboard - ZassPrint Thesis Order" });
 
 const columns = [
   {
-    key: "order_no",
+    key: "orderNo",
     label: "Order No",
     sortable: true,
   },
@@ -58,7 +68,7 @@ const rows = computed(() => {
     .slice((page.value - 1) * pageCount, page.value * pageCount);
 });
 
-type ThesisOrder = z.output<typeof thesisOrderSchema> & { order_no: string };
+type ThesisOrder = z.output<typeof thesisOrderSchema> & { orderNo: string };
 
 const selectedThesisOrder = ref<ThesisOrder>();
 const isStatusOpen = ref(false);
@@ -182,7 +192,7 @@ async function deleteOrder(orderNo: string) {
         <UButton
           color="gray"
           icon="i-heroicons-receipt-percent-20-solid"
-          @click="getReceipt(row.order_no)"
+          @click="getReceipt(row.orderNo)"
         />
       </template>
 
@@ -220,7 +230,7 @@ async function deleteOrder(orderNo: string) {
                     <UButton
                       variant="ghost"
                       color="white"
-                      @click="updateStatus(row.order_no, row.status, status)"
+                      @click="updateStatus(row.orderNo, row.status, status)"
                     >
                       {{ status }}
                     </UButton>
@@ -244,7 +254,7 @@ async function deleteOrder(orderNo: string) {
       />
     </div>
 
-    <UModal v-model="isDetailsOpen">
+    <UModal v-model="isDetailsOpen" v-if="selectedThesisOrder">
       <UCard
         :ui="{
           ring: '',
@@ -254,7 +264,7 @@ async function deleteOrder(orderNo: string) {
         <template #header>
           <div class="flex items-center justify-between">
             <h4 class="scroll-m-20 text-xl font-semibold tracking-tight">
-              {{ selectedThesisOrder && selectedThesisOrder.name }}
+              {{ selectedThesisOrder.name }}
             </h4>
             <UButton
               color="gray"
@@ -271,13 +281,13 @@ async function deleteOrder(orderNo: string) {
             <div>
               <p class="text-lg font-semibold">Phone Number</p>
               <small class="text-sm font-medium leading-none">
-                {{ selectedThesisOrder && selectedThesisOrder.phone_num }}
+                {{ selectedThesisOrder.phoneNumber }}
               </small>
             </div>
             <div>
               <p class="text-lg font-semibold">Matrix Number</p>
               <small class="text-sm font-medium leading-none">
-                {{ selectedThesisOrder && selectedThesisOrder.matrix_num }}
+                {{ selectedThesisOrder.matrixNumber }}
               </small>
             </div>
           </div>
@@ -288,13 +298,13 @@ async function deleteOrder(orderNo: string) {
             <div>
               <p class="text-lg font-semibold">Type of Thesis</p>
               <small class="text-sm font-medium leading-none">
-                {{ selectedThesisOrder && selectedThesisOrder.thesis_type }}
+                {{ selectedThesisOrder.thesisType }}
               </small>
             </div>
             <div>
               <p class="text-lg font-semibold">Cover Color</p>
               <small class="text-sm font-medium leading-none">
-                {{ selectedThesisOrder && selectedThesisOrder.cover_color }}
+                {{ selectedThesisOrder.coverColor }}
               </small>
             </div>
           </div>
@@ -304,7 +314,7 @@ async function deleteOrder(orderNo: string) {
           <div>
             <p class="text-lg font-semibold">Thesis Title</p>
             <small class="text-sm font-medium leading-none">
-              {{ selectedThesisOrder && selectedThesisOrder.thesis_title }}
+              {{ selectedThesisOrder.thesisTitle }}
             </small>
           </div>
 
@@ -312,20 +322,20 @@ async function deleteOrder(orderNo: string) {
             <div>
               <p class="text-lg font-semibold">Faculty</p>
               <small class="text-sm font-medium leading-none">
-                {{ selectedThesisOrder && selectedThesisOrder.faculty }}
+                {{ selectedThesisOrder.faculty }}
               </small>
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <p class="text-lg font-semibold">Year</p>
                 <small class="text-sm font-medium leading-none">
-                  {{ selectedThesisOrder && selectedThesisOrder.year }}
+                  {{ selectedThesisOrder.year }}
                 </small>
               </div>
               <div>
                 <p class="text-lg font-semibold">Study Acronym</p>
                 <small class="text-sm font-medium leading-none">
-                  {{ selectedThesisOrder && selectedThesisOrder.study_acronym }}
+                  {{ selectedThesisOrder.studyAcronym }}
                 </small>
               </div>
             </div>
@@ -337,39 +347,37 @@ async function deleteOrder(orderNo: string) {
             <div>
               <p class="text-lg font-semibold">Color Pages</p>
               <small class="text-sm font-medium leading-none">
-                {{ selectedThesisOrder && selectedThesisOrder.color_pages }}
+                {{ selectedThesisOrder.colorPages }}
               </small>
             </div>
             <div>
               <p class="text-lg font-semibold">B&W Pages</p>
               <small class="text-sm font-medium leading-none">
-                {{
-                  selectedThesisOrder && selectedThesisOrder.black_white_pages
-                }}
+                {{ selectedThesisOrder.blackWhitePages }}
               </small>
             </div>
             <div>
               <p class="text-lg font-semibold">Copies</p>
               <small class="text-sm font-medium leading-none">
-                {{ selectedThesisOrder && selectedThesisOrder.copies }}
+                {{ selectedThesisOrder.copies }}
               </small>
             </div>
           </div>
 
-          <div v-if="selectedThesisOrder && selectedThesisOrder.cd_label">
+          <div v-if="selectedThesisOrder.cdLabel">
             <UDivider class="mb-4" />
 
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <p class="text-lg font-semibold">CD Label</p>
                 <small class="text-sm font-medium leading-none">
-                  {{ selectedThesisOrder.cd_label }}
+                  {{ selectedThesisOrder.cdLabel }}
                 </small>
               </div>
               <div>
                 <p class="text-lg font-semibold">CD Copies</p>
                 <small class="text-sm font-medium leading-none">
-                  {{ selectedThesisOrder.cd_copies }}
+                  {{ selectedThesisOrder.cdCopies }}
                 </small>
               </div>
             </div>
@@ -383,24 +391,19 @@ async function deleteOrder(orderNo: string) {
               <small class="text-sm font-medium leading-none">
                 {{
                   selectedThesisOrder &&
-                  format(selectedThesisOrder.collection_date, "dd MMM yyyy")
+                  format(selectedThesisOrder.collectionDate, "dd MMM yyyy")
                 }}
               </small>
             </div>
             <div>
               <p class="text-lg font-semibold">Collection Method</p>
               <small class="text-sm font-medium leading-none">
-                {{
-                  selectedThesisOrder && selectedThesisOrder.collection_method
-                }}
+                {{ selectedThesisOrder.collectionMethod }}
               </small>
             </div>
           </div>
 
-          <div
-            v-if="selectedThesisOrder && selectedThesisOrder.address"
-            class="mt-2 sm:mt-4"
-          >
+          <div v-if="selectedThesisOrder.address" class="mt-2 sm:mt-4">
             <p class="text-lg font-semibold">Address</p>
             <small class="text-sm font-medium leading-none">
               {{ selectedThesisOrder.address }}
@@ -438,7 +441,7 @@ async function deleteOrder(orderNo: string) {
               label="Continue"
               color="red"
               @click="
-                selectedThesisOrder && deleteOrder(selectedThesisOrder.order_no)
+                selectedThesisOrder && deleteOrder(selectedThesisOrder.orderNo)
               "
             />
           </div>
