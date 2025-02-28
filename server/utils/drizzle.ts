@@ -1,5 +1,5 @@
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "../database/schema";
 
 export { and, desc, eq, gte, lt } from "drizzle-orm";
@@ -7,7 +7,7 @@ export { and, desc, eq, gte, lt } from "drizzle-orm";
 export const tables = schema;
 
 export function useDrizzle() {
-  const client = postgres(process.env.DATABASE_URL!);
+  const client = neon(process.env.DATABASE_URL!);
   return drizzle({ client });
 }
 

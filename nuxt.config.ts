@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   future: { compatibilityVersion: 4 },
   devtools: { enabled: true },
-  modules: ["@nuxt/ui", "@nuxtjs/supabase", "nuxt-auth-utils"],
+  modules: ["@nuxt/ui", "nuxt-auth-utils"],
   compatibilityDate: "2024-07-17",
   colorMode: { preference: "light" },
   runtimeConfig: {
@@ -13,9 +13,6 @@ export default defineNuxtConfig({
   routeRules: {
     "/": { prerender: true },
     "/admin/**": { ssr: false },
-  },
-  supabase: {
-    redirect: false,
   },
   app: {
     head: {
