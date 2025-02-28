@@ -18,10 +18,10 @@ const countExistingOrders = async (client: SupabaseClient<Database>) => {
     .lt(
       "created_at",
       `${useDateFormat(addMonths(now.value, 1), "YYYY-MM").value}-01`,
-  );
+    );
 
   return data?.length === 0
-    ? `${useDateFormat(now, "YYMM")}001`
+    ? `${useDateFormat(now, "YYMM").value}001`
     : (Number(data?.pop()?.order_no) + 1).toString();
 };
 
