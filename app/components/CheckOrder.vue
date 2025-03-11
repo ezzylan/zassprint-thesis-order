@@ -1,12 +1,15 @@
 <script setup lang="ts">
 const form = ref();
 const toast = useToast();
+const isLoading = ref(false);
 
 const state = reactive({
   orderNo: undefined,
 });
 
 async function onSubmit() {
+  isLoading.value = true;
+
   try {
     const response = await $fetch(`/api/orderStatus?orderNo=${state.orderNo}`);
 
@@ -30,6 +33,8 @@ async function onSubmit() {
       });
     }
   }
+
+  isLoading.value = false;
 }
 </script>
 
@@ -53,7 +58,9 @@ async function onSubmit() {
           <UInput v-model="state.orderNo" />
         </UFormGroup>
 
-        <UButton type="submit"> Submit </UButton>
+        <UButton type="submit" :loading="isLoading">
+          {{ isLoading ? "Submitting..." : "Submit" }}
+        </UButton>
       </UForm>
     </div>
   </UModal>

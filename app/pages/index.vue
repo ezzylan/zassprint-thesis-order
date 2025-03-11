@@ -29,13 +29,13 @@ const state = reactive({
 const form = ref();
 const orderNo = ref("");
 const isOpen = ref(false);
-const loading = ref(false);
+const isLoading = ref(false);
 const toast = useToast();
 const { copy } = useClipboard();
 
 async function onSubmit() {
   form.value.clear();
-  loading.value = true;
+  isLoading.value = true;
 
   try {
     orderNo.value = await $fetch("/api/thesisOrder", {
@@ -62,7 +62,7 @@ async function onSubmit() {
       },
     });
 
-    loading.value = false;
+    isLoading.value = false;
     isOpen.value = true;
   } catch (err) {
     if (err.statusCode === 422) {
@@ -251,7 +251,9 @@ async function onSubmit() {
           />
         </UFormGroup>
 
-        <UButton :loading type="submit"> Submit </UButton>
+        <UButton :loading="isLoading" type="submit">
+          {{ isLoading ? "Submitting..." : "Submit" }}
+        </UButton>
       </UForm>
 
       <UModal v-model="isOpen" prevent-close>

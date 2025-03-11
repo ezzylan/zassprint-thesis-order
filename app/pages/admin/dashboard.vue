@@ -413,7 +413,7 @@ async function deleteOrder(orderNo: string) {
       </UCard>
     </UModal>
 
-    <UModal v-model="isDeleteOpen">
+    <UModal v-model="isDeleteOpen" v-if="selectedThesisOrder">
       <UCard
         :ui="{
           ring: '',
@@ -422,7 +422,7 @@ async function deleteOrder(orderNo: string) {
       >
         <template #header>
           <h4 class="scroll-m-20 text-xl font-semibold tracking-tight">
-            Are you absolutely sure?
+            Delete order #{{ selectedThesisOrder.orderNo }}?
           </h4>
           <p class="leading-7">
             This action cannot be undone. This will permanently delete the order
@@ -440,9 +440,7 @@ async function deleteOrder(orderNo: string) {
             <UButton
               label="Continue"
               color="red"
-              @click="
-                selectedThesisOrder && deleteOrder(selectedThesisOrder.orderNo)
-              "
+              @click="deleteOrder(selectedThesisOrder.orderNo)"
             />
           </div>
         </template>

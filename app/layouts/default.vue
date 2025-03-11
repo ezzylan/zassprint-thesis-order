@@ -7,6 +7,7 @@ const prices = data.value ?? [];
 const isPricingOpen = ref(false);
 const isStatusOpen = ref(false);
 const isEditPricesOpen = ref(false);
+const isLoginOpen = ref(false);
 
 const items = [
   [
@@ -53,7 +54,7 @@ const items = [
     <div class="space-x-2">
       <template v-if="!user">
         <UButton color="red" @click="isStatusOpen = true">Check Order</UButton>
-        <UButton color="gray" to="/login">Log In</UButton>
+        <UButton color="gray" @click="isLoginOpen = true">Log In</UButton>
       </template>
 
       <UDropdown v-else :items="items" :popper="{ placement: 'bottom-end' }">
@@ -139,6 +140,6 @@ const items = [
   </UModal>
 
   <LazyCheckOrder v-model="isStatusOpen" />
-
   <LazyEditPrices v-model="isEditPricesOpen" />
+  <LazyLogin v-model="isLoginOpen" />
 </template>
