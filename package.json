@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
-    "@nuxt/ui": "^2.21.1",
+    "@nuxt/ui": "^3.0.0",
     "drizzle-kit": "^0.30.5",
     "nuxt": "^3.16.0",
     "nuxt-auth-utils": "0.5.16",
