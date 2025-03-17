@@ -256,40 +256,39 @@ async function onSubmit() {
         </UButton>
       </UForm>
 
-      <UModal v-model="isOpen" prevent-close>
-        <UCard
-          :ui="{
-            ring: '',
-            divide: 'divide-y divide-neutral-100 dark:divide-neutral-800',
-          }"
-        >
-          <template #header>
+      <UModal
+        v-model="isOpen"
+        :dismissible="false"
+        title="We have received your order!"
+        description="Here's your order number: #{{ orderNo }}"
+        :ui="{ footer: 'justify-end' }"
+      >
+        <!-- <template #header>
             <h4 class="scroll-m-20 text-xl font-semibold tracking-tight">
               We have received your order!
             </h4>
             <p class="leading-7">Here's your order number: #{{ orderNo }}</p>
-          </template>
+          </template> -->
 
-          <template #footer>
-            <div class="flex justify-end gap-2">
-              <UButton label="OK" color="neutral" @click="isOpen = false" />
-              <UButton
-                label="Copy Order Number"
-                @click="
-                  () => {
-                    copy(orderNo);
-                    toast.add({
-                      title: 'Order number copied!',
-                      icon: 'i-heroicons-check-circle',
-                      color: 'green',
-                    });
-                    isOpen = false;
-                  }
-                "
-              />
-            </div>
-          </template>
-        </UCard>
+        <template #footer>
+          <div class="flex justify-end gap-2">
+            <UButton label="OK" color="neutral" @click="isOpen = false" />
+            <UButton
+              label="Copy Order Number"
+              @click="
+                () => {
+                  copy(orderNo);
+                  toast.add({
+                    title: 'Order number copied!',
+                    icon: 'i-heroicons-check-circle',
+                    color: 'success',
+                  });
+                  isOpen = false;
+                }
+              "
+            />
+          </div>
+        </template>
       </UModal>
     </div>
   </NuxtLayout>

@@ -82,7 +82,7 @@ const items = [
   </header>
 
   <main class="min-h-screen bg-neutral-100">
-    <UContainer :ui="{ padding: 'py-4' }">
+    <UContainer :ui="{ base: 'py-4' }">
       <div class="flex justify-between">
         <h1 class="text-3xl font-bold text-neutral-900">
           {{ $attrs.title }}

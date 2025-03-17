@@ -9,15 +9,7 @@ const credentials = reactive({
 const form = ref();
 const toast = useToast();
 const isLoading = ref(false);
-const passwordVisible = ref(false);
-
-const eyeIcon = computed(() =>
-  passwordVisible.value ? "i-heroicons-eye-slash" : "i-heroicons-eye",
-);
-
-const pwInputType = computed(() =>
-  passwordVisible.value ? "text" : "password",
-);
+const isPwVisible = ref(false);
 
 async function login() {
   isLoading.value = true;
@@ -35,7 +27,7 @@ async function login() {
         title: error.name,
         description: error.message,
         icon: "i-heroicons-x-circle",
-        color: "red",
+        color: "error",
       });
 
       isLoading.value = false;
@@ -44,7 +36,7 @@ async function login() {
 </script>
 
 <template>
-  <UModal :ui="{ width: 'sm:max-w-md' }">
+  <UModal :ui="{ content: 'sm:max-w-md' }">
     <div class="flex flex-col items-center justify-center gap-2 space-y-4 p-8">
       <div class="space-y-2 text-center">
         <h2 class="text-3xl font-bold tracking-tight text-neutral-900">
@@ -74,18 +66,23 @@ async function login() {
           <UFormField label="Password" name="password">
             <UInput
               v-model="credentials.password"
-              :type="pwInputType"
+              :type="isPwVisible ? 'text' : 'password'"
               placeholder="password123"
               required
-              :ui="{ icon: { trailing: { pointer: '' } } }"
+              :ui="{ trailing: 'pe-1' }"
             >
               <template #trailing>
                 <UButton
                   color="neutral"
                   variant="link"
-                  :icon="eyeIcon"
-                  :padded="false"
-                  @click="passwordVisible = !passwordVisible"
+                  size="sm"
+                  :icon="
+                    isPwVisible ? 'i-heroicons-eye-slash' : 'i-heroicons-eye'
+                  "
+                  :aria-label="isPwVisible ? 'Hide password' : 'Show password'"
+                  :aria-pressed="isPwVisible"
+                  aria-controls="password"
+                  @click="isPwVisible = !isPwVisible"
                 />
               </template>
             </UInput>

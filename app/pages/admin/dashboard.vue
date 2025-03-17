@@ -146,7 +146,7 @@ async function updateStatus(
       actions: [
         {
           label: "Undo",
-          click: () => {
+          onClick: () => {
             updateStatus(orderNo, newStatus, oldStatus);
           },
         },
@@ -167,7 +167,7 @@ async function deleteOrder(orderNo: string) {
     refresh();
     isDeleteOpen.value = false;
 
-    toast.add({ title: `Order #${orderNo} deleted!`, color: "red" });
+    toast.add({ title: `Order #${orderNo} deleted!`, color: "success" });
   } catch (err) {
     console.error(err);
   }

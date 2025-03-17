@@ -29,7 +29,7 @@ async function onSubmit() {
       toast.add({
         title: `Order #${state.orderNo} not found.`,
         icon: "i-heroicons-x-circle",
-        color: "red",
+        color: "error",
       });
     }
   }
@@ -39,7 +39,7 @@ async function onSubmit() {
 </script>
 
 <template>
-  <UModal :ui="{ width: 'w-72' }">
+  <UModal :ui="{ content: 'w-72' }">
     <div class="space-y-4 p-4">
       <h3
         class="text-base leading-6 font-semibold text-neutral-900 dark:text-white"

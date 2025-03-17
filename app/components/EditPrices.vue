@@ -28,7 +28,7 @@ async function onSubmit() {
     toast.add({
       title: "Prices updated!",
       icon: "i-heroicons-check-circle",
-      color: "green",
+      color: "success",
     });
   } catch (err) {
     if (err.statusCode === 422) {
