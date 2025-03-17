@@ -48,7 +48,7 @@ async function onSubmit() {
   <UModal>
     <div class="space-y-4 p-4">
       <h3
-        class="text-base font-semibold leading-6 text-gray-900 dark:text-white"
+        class="text-base leading-6 font-semibold text-neutral-900 dark:text-white"
       >
         Edit Prices
       </h3>

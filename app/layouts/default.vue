@@ -53,22 +53,26 @@ const items = [
 
     <div class="space-x-2">
       <template v-if="!user">
-        <UButton color="red" @click="isStatusOpen = true">Check Order</UButton>
-        <UButton color="gray" @click="isLoginOpen = true">Log In</UButton>
+        <UButton color="error" @click="isStatusOpen = true"
+          >Check Order</UButton
+        >
+        <UButton color="neutral" @click="isLoginOpen = true">Log In</UButton>
       </template>
 
       <UDropdown v-else :items="items" :popper="{ placement: 'bottom-end' }">
         <UButton
-          color="white"
+          color="neutral"
           trailing-icon="i-heroicons-chevron-down-20-solid"
           class="space-x-2 shadow-sm hover:shadow-md"
         >
           <UAvatar alt="Zass Admin" size="sm" />
           <div class="hidden text-left sm:block">
-            <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">
+            <p
+              class="text-sm font-semibold text-neutral-800 dark:text-neutral-200"
+            >
               {{ user.email }}
             </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+            <p class="text-xs text-neutral-500 dark:text-neutral-400">
               {{ user.name }}
             </p>
           </div>
@@ -77,17 +81,17 @@ const items = [
     </div>
   </header>
 
-  <main class="min-h-screen bg-gray-100">
+  <main class="min-h-screen bg-neutral-100">
     <UContainer :ui="{ padding: 'py-4' }">
       <div class="flex justify-between">
-        <h1 class="text-3xl font-bold text-gray-900">
+        <h1 class="text-3xl font-bold text-neutral-900">
           {{ $attrs.title }}
         </h1>
 
         <UButton
           v-if="$attrs.title === 'Thesis Order Form'"
           @click="isPricingOpen = true"
-          color="yellow"
+          color="warning"
         >
           Pricing
         </UButton>

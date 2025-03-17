@@ -42,7 +42,7 @@ async function onSubmit() {
   <UModal :ui="{ width: 'w-72' }">
     <div class="space-y-4 p-4">
       <h3
-        class="text-base font-semibold leading-6 text-gray-900 dark:text-white"
+        class="text-base leading-6 font-semibold text-neutral-900 dark:text-white"
       >
         Enter your order number here:
       </h3>

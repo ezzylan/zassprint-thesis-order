@@ -83,7 +83,7 @@ async function onSubmit() {
     <div class="space-y-4 py-4">
       <UAlert
         icon="i-heroicons-information-circle-20-solid"
-        color="blue"
+        color="info"
         variant="subtle"
         title="Thesis Order Process"
       >
@@ -260,7 +260,7 @@ async function onSubmit() {
         <UCard
           :ui="{
             ring: '',
-            divide: 'divide-y divide-gray-100 dark:divide-gray-800',
+            divide: 'divide-y divide-neutral-100 dark:divide-neutral-800',
           }"
         >
           <template #header>
@@ -272,7 +272,7 @@ async function onSubmit() {
 
           <template #footer>
             <div class="flex justify-end gap-2">
-              <UButton label="OK" color="gray" @click="isOpen = false" />
+              <UButton label="OK" color="neutral" @click="isOpen = false" />
               <UButton
                 label="Copy Order Number"
                 @click="

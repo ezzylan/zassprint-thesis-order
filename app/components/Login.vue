@@ -47,8 +47,10 @@ async function login() {
   <UModal :ui="{ width: 'sm:max-w-md' }">
     <div class="flex flex-col items-center justify-center gap-2 space-y-4 p-8">
       <div class="space-y-2 text-center">
-        <h2 class="text-3xl font-bold tracking-tight text-gray-900">Sign In</h2>
-        <p class="text-sm text-gray-600">
+        <h2 class="text-3xl font-bold tracking-tight text-neutral-900">
+          Sign In
+        </h2>
+        <p class="text-sm text-neutral-600">
           Enter your credentials below to continue.
         </p>
       </div>
@@ -79,7 +81,7 @@ async function login() {
             >
               <template #trailing>
                 <UButton
-                  color="gray"
+                  color="neutral"
                   variant="link"
                   :icon="eyeIcon"
                   :padded="false"
