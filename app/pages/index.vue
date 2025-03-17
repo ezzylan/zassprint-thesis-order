@@ -109,21 +109,21 @@ async function onSubmit() {
         @submit="onSubmit"
       >
         <div class="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-4">
-          <UFormGroup label="Full Name" name="name" required>
+          <UFormField label="Full Name" name="name" required>
             <UInput v-model="state.name" />
-          </UFormGroup>
-          <UFormGroup label="Phone Number" name="phoneNumber" required>
+          </UFormField>
+          <UFormField label="Phone Number" name="phoneNumber" required>
             <UInput v-model="state.phoneNumber" type="tel" />
-          </UFormGroup>
-          <UFormGroup label="Matrix Number" name="matrixNumber" required>
+          </UFormField>
+          <UFormField label="Matrix Number" name="matrixNumber" required>
             <UInput v-model="state.matrixNumber" />
-          </UFormGroup>
+          </UFormField>
         </div>
 
-        <UDivider class="my-6" />
+        <USeparator class="my-6" />
 
         <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
-          <UFormGroup label="Type of Thesis" name="thesisType" required>
+          <UFormField label="Type of Thesis" name="thesisType" required>
             <USelectMenu
               v-model="state.thesisType"
               :options="[
@@ -134,8 +134,8 @@ async function onSubmit() {
               ]"
               placeholder="Select thesis type"
             />
-          </UFormGroup>
-          <UFormGroup label="Cover Color" name="coverColor" required>
+          </UFormField>
+          <UFormField label="Cover Color" name="coverColor" required>
             <USelectMenu
               v-model="state.coverColor"
               :options="[
@@ -147,70 +147,70 @@ async function onSubmit() {
               ]"
               placeholder="Select cover color"
             />
-          </UFormGroup>
+          </UFormField>
         </div>
 
-        <UDivider class="my-6" />
+        <USeparator class="my-6" />
 
         <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
-          <UFormGroup label="Thesis Title" name="thesisTitle" required>
+          <UFormField label="Thesis Title" name="thesisTitle" required>
             <UInput v-model="state.thesisTitle" />
-          </UFormGroup>
-          <UFormGroup label="Faculty" name="faculty" required>
+          </UFormField>
+          <UFormField label="Faculty" name="faculty" required>
             <UInput v-model="state.faculty" />
-          </UFormGroup>
-          <UFormGroup label="Year" name="year" required>
+          </UFormField>
+          <UFormField label="Year" name="year" required>
             <UInput v-model="state.year" type="number" min="2025" />
-          </UFormGroup>
-          <UFormGroup label="Study Acronym" name="studyAcronym" required>
+          </UFormField>
+          <UFormField label="Study Acronym" name="studyAcronym" required>
             <UInput v-model="state.studyAcronym" />
-          </UFormGroup>
+          </UFormField>
         </div>
 
-        <UDivider class="my-6" />
+        <USeparator class="my-6" />
 
         <div class="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-4">
-          <UFormGroup label="Color Pages" name="colorPages" required>
+          <UFormField label="Color Pages" name="colorPages" required>
             <UInput v-model="state.colorPages" type="number" min="0" />
-          </UFormGroup>
-          <UFormGroup
+          </UFormField>
+          <UFormField
             label="Black & White Pages"
             name="blackWhitePages"
             required
           >
             <UInput v-model="state.blackWhitePages" type="number" min="0" />
-          </UFormGroup>
-          <UFormGroup label="Copies" name="copies" required>
+          </UFormField>
+          <UFormField label="Copies" name="copies" required>
             <UInput v-model="state.copies" type="number" min="1" />
-          </UFormGroup>
+          </UFormField>
         </div>
 
-        <UDivider class="my-6" />
+        <USeparator class="my-6" />
 
-        <UFormGroup name="cdBurn">
+        <UFormField name="cdBurn">
           <UCheckbox v-model="state.cdBurn" label="CD Burn" />
-        </UFormGroup>
+        </UFormField>
 
         <div
           v-if="state.cdBurn"
           class="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4"
         >
-          <UFormGroup label="CD Label" name="cdLabel">
+          <UFormField label="CD Label" name="cdLabel">
             <USelectMenu
               v-model="state.cdLabel"
               :options="['Sticker Label', 'Paper Label']"
               placeholder="Select CD label"
             />
-          </UFormGroup>
-          <UFormGroup label="Number of CD Copies" name="cdCopies">
+          </UFormField>
+          <UFormField label="Number of CD Copies" name="cdCopies">
             <UInput v-model="state.cdCopies" type="number" min="0" />
-          </UFormGroup>
+          </UFormField>
         </div>
 
-        <UDivider class="my-6" />
+        <USeparator class="my-6" />
 
         <div class="mb-3 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
-          <UFormGroup label="Collection Date" name="collectionDate" required>
+          <UFormField label="Collection Date" name="collectionDate" required>
             <UPopover :popper="{ placement: 'top-start' }">
               <UButton
                 variant="outline"
@@ -226,8 +226,8 @@ async function onSubmit() {
                 />
               </template>
             </UPopover>
-          </UFormGroup>
-          <UFormGroup
+          </UFormField>
+          <UFormField
             label="Collection Method"
             name="collectionMethod"
             required
@@ -237,10 +237,10 @@ async function onSubmit() {
               :options="['Delivery', 'Pick Up (Partnership Shop at Serdang)']"
               placeholder="Select collection method"
             />
-          </UFormGroup>
+          </UFormField>
         </div>
 
-        <UFormGroup
+        <UFormField
           v-if="state.collectionMethod === 'Delivery'"
           label="Address"
           name="address"
@@ -249,7 +249,7 @@ async function onSubmit() {
             v-model="state.address"
             placeholder="Write your delivery address here..."
           />
-        </UFormGroup>
+        </UFormField>
 
         <UButton :loading="isLoading" type="submit">
           {{ isLoading ? "Submitting..." : "Submit" }}

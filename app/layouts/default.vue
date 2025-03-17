@@ -59,7 +59,7 @@ const items = [
         <UButton color="neutral" @click="isLoginOpen = true">Log In</UButton>
       </template>
 
-      <UDropdown v-else :items="items" :popper="{ placement: 'bottom-end' }">
+      <UDropdownMenu v-else :items="items" :content="{ align: 'end' }">
         <UButton
           color="neutral"
           trailing-icon="i-heroicons-chevron-down-20-solid"
@@ -77,7 +77,7 @@ const items = [
             </p>
           </div>
         </UButton>
-      </UDropdown>
+      </UDropdownMenu>
     </div>
   </header>
 

@@ -61,25 +61,25 @@ async function onSubmit() {
         @submit="onSubmit"
       >
         <div class="grid grid-flow-col grid-rows-3 gap-4 md:grid-rows-2">
-          <UFormGroup label="Black & White" name="blackWhite">
+          <UFormField label="Black & White" name="blackWhite">
             <UInput v-model="state.blackWhite" type="number" step="0.1" />
-          </UFormGroup>
-          <UFormGroup label="Color" name="color">
+          </UFormField>
+          <UFormField label="Color" name="color">
             <UInput v-model="state.color" type="number" step="0.1" />
-          </UFormGroup>
-          <UFormGroup label="Hard/Soft Binding" name="binding">
+          </UFormField>
+          <UFormField label="Hard/Soft Binding" name="binding">
             <UInput v-model="state.binding" type="number" step="0.1" />
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup label="Sticker Label" name="stickerLabel">
+          <UFormField label="Sticker Label" name="stickerLabel">
             <UInput v-model="state.stickerLabel" type="number" step="0.1" />
-          </UFormGroup>
-          <UFormGroup label="Paper Label" name="paperLabel">
+          </UFormField>
+          <UFormField label="Paper Label" name="paperLabel">
             <UInput v-model="state.paperLabel" type="number" step="0.1" />
-          </UFormGroup>
-          <UFormGroup label="Delivery" name="delivery">
+          </UFormField>
+          <UFormField label="Delivery" name="delivery">
             <UInput v-model="state.delivery" type="number" step="0.1" />
-          </UFormGroup>
+          </UFormField>
         </div>
 
         <UButton type="submit"> Submit </UButton>

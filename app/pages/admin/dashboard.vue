@@ -197,7 +197,7 @@ async function deleteOrder(orderNo: string) {
       </template>
 
       <template #actions-data="{ row }">
-        <UDropdown :items="items(row)" :ui="{ width: 'w-36' }">
+        <UDropdownMenu :items="items(row)" :ui="{ content: 'w-36' }">
           <UButton
             color="neutral"
             variant="ghost"
@@ -239,7 +239,7 @@ async function deleteOrder(orderNo: string) {
               </template>
             </UPopover>
           </template>
-        </UDropdown>
+        </UDropdownMenu>
       </template>
     </UTable>
 
@@ -292,7 +292,7 @@ async function deleteOrder(orderNo: string) {
             </div>
           </div>
 
-          <UDivider />
+          <USeparator />
 
           <div class="grid grid-cols-2 gap-4">
             <div>
@@ -309,7 +309,7 @@ async function deleteOrder(orderNo: string) {
             </div>
           </div>
 
-          <UDivider />
+          <USeparator />
 
           <div>
             <p class="text-lg font-semibold">Thesis Title</p>
@@ -341,7 +341,7 @@ async function deleteOrder(orderNo: string) {
             </div>
           </div>
 
-          <UDivider />
+          <USeparator />
 
           <div class="grid grid-cols-3 gap-4">
             <div>
@@ -365,7 +365,7 @@ async function deleteOrder(orderNo: string) {
           </div>
 
           <div v-if="selectedThesisOrder.cdLabel">
-            <UDivider class="mb-4" />
+            <USeparator class="mb-4" />
 
             <div class="grid grid-cols-2 gap-4">
               <div>
@@ -383,7 +383,7 @@ async function deleteOrder(orderNo: string) {
             </div>
           </div>
 
-          <UDivider />
+          <USeparator />
 
           <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
             <div>

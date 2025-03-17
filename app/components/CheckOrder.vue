@@ -54,9 +54,9 @@ async function onSubmit() {
         class="space-y-4"
         @submit="onSubmit"
       >
-        <UFormGroup name="orderNo">
+        <UFormField name="orderNo">
           <UInput v-model="state.orderNo" />
-        </UFormGroup>
+        </UFormField>
 
         <UButton type="submit" :loading="isLoading">
           {{ isLoading ? "Submitting..." : "Submit" }}

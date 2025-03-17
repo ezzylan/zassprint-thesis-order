@@ -63,15 +63,15 @@ async function login() {
         @submit="login"
       >
         <div class="space-y-4">
-          <UFormGroup label="Email" name="email">
+          <UFormField label="Email" name="email">
             <UInput
               v-model="credentials.email"
               placeholder="test@example.com"
               required
             />
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup label="Password" name="password">
+          <UFormField label="Password" name="password">
             <UInput
               v-model="credentials.password"
               :type="pwInputType"
@@ -89,7 +89,7 @@ async function login() {
                 />
               </template>
             </UInput>
-          </UFormGroup>
+          </UFormField>
         </div>
 
         <UButton block type="submit" :loading="isLoading">
