@@ -1,47 +1,19 @@
 <script setup lang="ts">
-import { format } from "date-fns";
-import type { z } from "zod";
+import { LazyDeleteOrderModal, LazyViewOrderModal } from "#components";
+import type { DropdownMenuItem, TableColumn } from "@nuxt/ui";
+import { getPaginationRowModel, type Column } from "@tanstack/vue-table";
+import type { FetchError } from "ofetch";
 
 definePageMeta({
   middleware: [
     function () {
       const { loggedIn } = useUserSession();
-
-      if (!loggedIn.value) {
-        return navigateTo("/login");
-      }
+      if (!loggedIn.value) navigateTo("/login");
     },
   ],
 });
 
 useHead({ title: "Dashboard - ZassPrint Thesis Order" });
-
-const columns = [
-  {
-    key: "orderNo",
-    label: "Order No",
-    sortable: true,
-  },
-  {
-    key: "name",
-    label: "Name",
-    sortable: true,
-  },
-  {
-    key: "status",
-    label: "Status",
-    sortable: true,
-  },
-  {
-    key: "receipt",
-    label: "Receipt",
-  },
-  { key: "actions" },
-];
-
-const filtered = ref("");
-const page = ref(1);
-const pageCount = 10;
 
 const { data, status, refresh } = await useLazyFetch("/api/thesisOrder", {
   headers: useRequestHeaders(["cookie"]),
@@ -49,64 +21,88 @@ const { data, status, refresh } = await useLazyFetch("/api/thesisOrder", {
 
 const thesisOrders = computed(() => data.value ?? []);
 
-const rows = computed(() => {
-  if (!filtered.value) {
-    return thesisOrders.value.slice(
-      (page.value - 1) * pageCount,
-      page.value * pageCount,
-    );
-  }
+const overlay = useOverlay();
+const viewOrderModal = overlay.create(LazyViewOrderModal);
+const deleteOrderModal = overlay.create(LazyDeleteOrderModal);
 
-  return thesisOrders.value
-    .filter((order) => {
-      return Object.values(order).some((value) => {
-        return String(value)
-          .toLowerCase()
-          .includes(filtered.value.toLowerCase());
-      });
-    })
-    .slice((page.value - 1) * pageCount, page.value * pageCount);
-});
-
-type ThesisOrder = z.output<typeof thesisOrderSchema> & { orderNo: string };
-
-const selectedThesisOrder = ref<ThesisOrder>();
-const isStatusOpen = ref(false);
-const isDetailsOpen = ref(false);
-const isDeleteOpen = ref(false);
-
-const items = (row: ThesisOrder) => [
+const getDropdownActions = (
+  thesisOrder: SelectThesisOrder,
+): DropdownMenuItem[][] => [
   [
     {
       label: "Change status",
-      slot: "status",
-      icon: "i-heroicons-pencil-square-20-solid",
-      click: () => {
-        selectedThesisOrder.value = row;
-        isStatusOpen.value = true;
-      },
+      slot: "status" as const,
     },
-
     {
       label: "View order",
-      icon: "i-heroicons-eye-20-solid",
-      click: () => {
-        selectedThesisOrder.value = row;
-        isDetailsOpen.value = true;
-      },
+      icon: "i-lucide-eye",
+      onSelect: () => viewOrderModal.open({ selectedThesisOrder: thesisOrder }),
     },
   ],
   [
     {
       label: "Delete order",
-      icon: "i-heroicons-trash-20-solid",
-      click: () => {
-        selectedThesisOrder.value = row;
-        isDeleteOpen.value = true;
-      },
+      icon: "i-lucide-trash-2",
+      onSelect: () =>
+        deleteOrderModal.open({ orderNo: thesisOrder.orderNo, refresh }),
     },
   ],
 ];
+
+const UBadge = resolveComponent("UBadge");
+const UButton = resolveComponent("UButton");
+const UPopover = resolveComponent("UPopover");
+const UButtonGroup = resolveComponent("UButtonGroup");
+const UDropdownMenu = resolveComponent("UDropdownMenu");
+
+function getHeader(column: Column<SelectThesisOrder>, label: string) {
+  const isSorted = column.getIsSorted();
+
+  return h(
+    UDropdownMenu,
+    {
+      content: { align: "start" },
+      "aria-label": "Actions dropdown",
+      items: [
+        {
+          label: "Asc",
+          type: "checkbox",
+          icon: "i-lucide-arrow-up-narrow-wide",
+          checked: isSorted === "asc",
+          onSelect: () => {
+            if (isSorted === "asc") column.clearSorting();
+            else column.toggleSorting(false);
+          },
+        },
+        {
+          label: "Desc",
+          icon: "i-lucide-arrow-down-wide-narrow",
+          type: "checkbox",
+          checked: isSorted === "desc",
+          onSelect: () => {
+            if (isSorted === "desc") column.clearSorting();
+            else column.toggleSorting(true);
+          },
+        },
+      ],
+    },
+    () =>
+      h(UButton, {
+        color: "neutral",
+        variant: "ghost",
+        label,
+        icon: isSorted
+          ? isSorted === "asc"
+            ? "i-lucide-arrow-up-narrow-wide"
+            : "i-lucide-arrow-down-wide-narrow"
+          : "i-lucide-arrow-up-down",
+        class: "-mx-2.5 data-[state=open]:bg-elevated",
+        "aria-label": `Sort by ${isSorted === "asc" ? "descending" : "ascending"}`,
+      }),
+  );
+}
+
+const toast = useToast();
 
 async function getReceipt(orderNo: string) {
   try {
@@ -117,15 +113,63 @@ async function getReceipt(orderNo: string) {
     const blob = new Blob([new Uint8Array(response)], {
       type: "application/pdf",
     });
-    const pdfUrl = URL.createObjectURL(blob);
 
+    const pdfUrl = URL.createObjectURL(blob);
     window.open(pdfUrl);
   } catch (err) {
-    console.error(err);
+    const error = err as FetchError;
+
+    toast.add({
+      title: error.name,
+      description: error.message,
+      icon: "i-lucide-circle-x",
+      color: "error",
+    });
   }
 }
 
-const toast = useToast();
+const columns: TableColumn<SelectThesisOrder>[] = [
+  {
+    accessorKey: "orderNo",
+    header: ({ column }) => getHeader(column, "Order No"),
+    cell: ({ row }) => `#${row.getValue("orderNo")}`,
+  },
+  {
+    accessorKey: "name",
+    header: ({ column }) => getHeader(column, "Name"),
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => getHeader(column, "Status"),
+    cell: ({ row }) => {
+      const color = orderStatusColors[row.getValue("status") as OrderStatus];
+
+      return h(UBadge, { class: "capitalize", variant: "subtle", color }, () =>
+        row.getValue("status"),
+      );
+    },
+  },
+  {
+    accessorKey: "receipt",
+    header: "Receipt",
+    cell: ({ row }) => {
+      return h(UButton, {
+        color: "neutral",
+        icon: "i-lucide-receipt",
+        onClick: () => getReceipt(row.original.orderNo),
+      });
+    },
+  },
+  {
+    id: "actions",
+  },
+];
+
+const table = useTemplateRef("table");
+
+const globalFilter = ref("");
+const sorting = ref([{ id: "orderNo", desc: true }]);
+const pagination = ref({ pageIndex: 0, pageSize: 10 });
 
 async function updateStatus(
   orderNo: string,
@@ -135,316 +179,118 @@ async function updateStatus(
   try {
     await $fetch("/api/orderStatus", {
       method: "POST",
-      body: { orderNo, newStatus },
+      body: { orderNo, status: newStatus } as UpdateOrderStatusSchema,
     });
 
-    refresh();
+    await refresh();
 
     toast.add({
       title: `Order #${orderNo} status updated!`,
       description: `${oldStatus} → ${newStatus}`,
+      color: "success",
       actions: [
         {
           label: "Undo",
-          onClick: () => {
-            updateStatus(orderNo, newStatus, oldStatus);
-          },
+          onClick: () => updateStatus(orderNo, newStatus, oldStatus),
         },
       ],
     });
   } catch (err) {
-    console.error(err);
-  }
-}
+    const error = err as FetchError;
 
-async function deleteOrder(orderNo: string) {
-  try {
-    await $fetch("/api/thesisOrder", {
-      method: "DELETE",
-      body: { orderNo },
+    toast.add({
+      title: error.name,
+      description: error.message,
+      icon: "i-lucide-circle-x",
+      color: "error",
     });
-
-    refresh();
-    isDeleteOpen.value = false;
-
-    toast.add({ title: `Order #${orderNo} deleted!`, color: "success" });
-  } catch (err) {
-    console.error(err);
   }
 }
 </script>
 
 <template>
   <NuxtLayout title="Dashboard">
-    <UInput
-      class="w-60 border-neutral-200 py-4"
-      v-model="filtered"
-      placeholder="Filter orders..."
-    />
-
-    <UTable
-      :loading="status === 'pending'"
-      class="rounded-md border bg-white"
-      :rows
-      :columns
-    >
-      <template #receipt-data="{ row }">
-        <UButton
-          color="neutral"
-          icon="i-heroicons-receipt-percent-20-solid"
-          @click="getReceipt(row.orderNo)"
-        />
-      </template>
-
-      <template #actions-data="{ row }">
-        <UDropdownMenu :items="items(row)" :ui="{ content: 'w-36' }">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            icon="i-heroicons-ellipsis-horizontal-20-solid"
-          />
-
-          <template #status="{ item }">
-            <UPopover mode="hover" :popper="{ placement: 'left' }">
-              <UButton
-                :padded="false"
-                color="neutral"
-                variant="ghost"
-                icon="i-heroicons-pencil-square-20-solid"
-              >
-                {{ item.label }}
-              </UButton>
-
-              <template #panel>
-                <UButtonGroup orientation="vertical">
-                  <div
-                    class="p-1"
-                    v-for="status in [
-                      'Pending',
-                      'Confirmed',
-                      'Printed',
-                      'Delivered',
-                      'Cancelled',
-                    ]"
-                  >
-                    <UButton
-                      variant="ghost"
-                      color="neutral"
-                      @click="updateStatus(row.orderNo, row.status, status)"
-                    >
-                      {{ status }}
-                    </UButton>
-                  </div>
-                </UButtonGroup>
-              </template>
-            </UPopover>
-          </template>
-        </UDropdownMenu>
-      </template>
-    </UTable>
-
-    <div
-      v-if="thesisOrders.length"
-      class="flex justify-end border-neutral-200 px-3 py-4"
-    >
-      <UPagination
-        v-model="page"
-        :page-count="pageCount"
-        :total="thesisOrders.length"
+    <div class="flex w-full flex-1 flex-col gap-4">
+      <UInput
+        class="w-60"
+        v-model="globalFilter"
+        placeholder="Filter orders..."
       />
-    </div>
 
-    <UModal v-model="isDetailsOpen" v-if="selectedThesisOrder">
-      <UCard
-        :ui="{
-          ring: '',
-          divide: 'divide-y divide-neutral-100 dark:divide-neutral-800',
-        }"
+      <UTable
+        ref="table"
+        :data="thesisOrders"
+        :columns
+        :loading="status === 'pending'"
+        v-model:sorting="sorting"
+        v-model:global-filter="globalFilter"
+        v-model:pagination="pagination"
+        :pagination-options="{ getPaginationRowModel: getPaginationRowModel() }"
+        sticky
+        class="rounded-md border bg-white"
       >
-        <template #header>
-          <div class="flex items-center justify-between">
-            <h4 class="scroll-m-20 text-xl font-semibold tracking-tight">
-              {{ selectedThesisOrder.name }}
-            </h4>
+        <template #actions-cell="{ row }">
+          <UDropdownMenu
+            :items="getDropdownActions(row.original)"
+            aria-label="Actions dropdown"
+          >
             <UButton
+              icon="i-lucide-ellipsis"
               color="neutral"
               variant="ghost"
-              icon="i-heroicons-x-mark-20-solid"
-              class="-my-1"
-              @click="isDetailsOpen = false"
+              class="ml-auto"
+              aria-label="Actions dropdown"
             />
-          </div>
+
+            <template #status="{ item }">
+              <UPopover mode="hover" :content="{ side: 'left' }">
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  icon="i-lucide-square-pen"
+                  class="p-0"
+                >
+                  {{ item.label }}
+                </UButton>
+
+                <template #content>
+                  <UButtonGroup orientation="vertical">
+                    <div class="p-1" v-for="status in orderStatus">
+                      <UButton
+                        variant="ghost"
+                        color="neutral"
+                        :trailing-icon="
+                          status === row.original.status ? 'i-lucide-check' : ''
+                        "
+                        @click="
+                          updateStatus(
+                            row.original.orderNo,
+                            row.original.status,
+                            status,
+                          )
+                        "
+                      >
+                        {{ status }}
+                      </UButton>
+                    </div>
+                  </UButtonGroup>
+                </template>
+              </UPopover>
+            </template>
+          </UDropdownMenu>
         </template>
+      </UTable>
 
-        <div class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p class="text-lg font-semibold">Phone Number</p>
-              <small class="text-sm leading-none font-medium">
-                {{ selectedThesisOrder.phoneNumber }}
-              </small>
-            </div>
-            <div>
-              <p class="text-lg font-semibold">Matrix Number</p>
-              <small class="text-sm leading-none font-medium">
-                {{ selectedThesisOrder.matrixNumber }}
-              </small>
-            </div>
-          </div>
-
-          <USeparator />
-
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p class="text-lg font-semibold">Type of Thesis</p>
-              <small class="text-sm leading-none font-medium">
-                {{ selectedThesisOrder.thesisType }}
-              </small>
-            </div>
-            <div>
-              <p class="text-lg font-semibold">Cover Color</p>
-              <small class="text-sm leading-none font-medium">
-                {{ selectedThesisOrder.coverColor }}
-              </small>
-            </div>
-          </div>
-
-          <USeparator />
-
-          <div>
-            <p class="text-lg font-semibold">Thesis Title</p>
-            <small class="text-sm leading-none font-medium">
-              {{ selectedThesisOrder.thesisTitle }}
-            </small>
-          </div>
-
-          <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
-            <div>
-              <p class="text-lg font-semibold">Faculty</p>
-              <small class="text-sm leading-none font-medium">
-                {{ selectedThesisOrder.faculty }}
-              </small>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <p class="text-lg font-semibold">Year</p>
-                <small class="text-sm leading-none font-medium">
-                  {{ selectedThesisOrder.year }}
-                </small>
-              </div>
-              <div>
-                <p class="text-lg font-semibold">Study Acronym</p>
-                <small class="text-sm leading-none font-medium">
-                  {{ selectedThesisOrder.studyAcronym }}
-                </small>
-              </div>
-            </div>
-          </div>
-
-          <USeparator />
-
-          <div class="grid grid-cols-3 gap-4">
-            <div>
-              <p class="text-lg font-semibold">Color Pages</p>
-              <small class="text-sm leading-none font-medium">
-                {{ selectedThesisOrder.colorPages }}
-              </small>
-            </div>
-            <div>
-              <p class="text-lg font-semibold">B&W Pages</p>
-              <small class="text-sm leading-none font-medium">
-                {{ selectedThesisOrder.blackWhitePages }}
-              </small>
-            </div>
-            <div>
-              <p class="text-lg font-semibold">Copies</p>
-              <small class="text-sm leading-none font-medium">
-                {{ selectedThesisOrder.copies }}
-              </small>
-            </div>
-          </div>
-
-          <div v-if="selectedThesisOrder.cdLabel">
-            <USeparator class="mb-4" />
-
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <p class="text-lg font-semibold">CD Label</p>
-                <small class="text-sm leading-none font-medium">
-                  {{ selectedThesisOrder.cdLabel }}
-                </small>
-              </div>
-              <div>
-                <p class="text-lg font-semibold">CD Copies</p>
-                <small class="text-sm leading-none font-medium">
-                  {{ selectedThesisOrder.cdCopies }}
-                </small>
-              </div>
-            </div>
-          </div>
-
-          <USeparator />
-
-          <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
-            <div>
-              <p class="text-lg font-semibold">Collection Date</p>
-              <small class="text-sm leading-none font-medium">
-                {{
-                  selectedThesisOrder &&
-                  format(selectedThesisOrder.collectionDate, "dd MMM yyyy")
-                }}
-              </small>
-            </div>
-            <div>
-              <p class="text-lg font-semibold">Collection Method</p>
-              <small class="text-sm leading-none font-medium">
-                {{ selectedThesisOrder.collectionMethod }}
-              </small>
-            </div>
-          </div>
-
-          <div v-if="selectedThesisOrder.address" class="mt-2 sm:mt-4">
-            <p class="text-lg font-semibold">Address</p>
-            <small class="text-sm leading-none font-medium">
-              {{ selectedThesisOrder.address }}
-            </small>
-          </div>
-        </div>
-      </UCard>
-    </UModal>
-
-    <UModal v-model="isDeleteOpen" v-if="selectedThesisOrder">
-      <UCard
-        :ui="{
-          ring: '',
-          divide: 'divide-y divide-neutral-100 dark:divide-neutral-800',
-        }"
-      >
-        <template #header>
-          <h4 class="scroll-m-20 text-xl font-semibold tracking-tight">
-            Delete order #{{ selectedThesisOrder.orderNo }}?
-          </h4>
-          <p class="leading-7">
-            This action cannot be undone. This will permanently delete the order
-            from the database.
-          </p>
-        </template>
-
-        <template #footer>
-          <div class="flex justify-end gap-2">
-            <UButton
-              label="Cancel"
-              color="neutral"
-              @click="isDeleteOpen = false"
-            />
-            <UButton
-              label="Continue"
-              color="error"
-              @click="deleteOrder(selectedThesisOrder.orderNo)"
-            />
-          </div>
-        </template>
-      </UCard>
-    </UModal>
+      <div v-if="thesisOrders.length" class="flex justify-end">
+        <UPagination
+          :default-page="
+            (table?.tableApi?.getState().pagination.pageIndex || 0) + 1
+          "
+          :items-per-page="table?.tableApi?.getState().pagination.pageSize"
+          :total="table?.tableApi?.getFilteredRowModel().rows.length"
+          @update:page="(p) => table?.tableApi?.setPageIndex(p - 1)"
+        />
+      </div>
+    </div>
   </NuxtLayout>
 </template>

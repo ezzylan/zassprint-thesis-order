@@ -7,24 +7,36 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "format": "prettier --write ."
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.2.82",
     "@nuxt/devtools": "latest",
-    "@nuxt/ui": "^3.0.0",
-    "drizzle-kit": "^0.30.5",
-    "nuxt": "^3.16.0",
-    "nuxt-auth-utils": "0.5.16",
-    "prettier": "^3.5.3",
-    "prettier-plugin-tailwindcss": "^0.6.11"
+    "@nuxt/ui": "^4.3.0",
+    "@vueuse/nuxt": "14.1.0",
+    "drizzle-kit": "^0.31.8",
+    "nuxt": "^4.2.2",
+    "nuxt-auth-utils": "0.5.25",
+    "prettier": "3.7.4",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "vue": "^3.5.26"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^0.10.4",
+    "@internationalized/date": "^3.10.1",
+    "@neondatabase/serverless": "^1.0.2",
+    "@tanstack/vue-table": "^8.21.3",
     "change-case": "^5.4.4",
     "date-fns": "^4.1.0",
-    "drizzle-orm": "^0.40.0",
+    "drizzle-orm": "^0.45.1",
+    "ofetch": "^1.5.1",
     "pdf-lib": "^1.17.1",
-    "v-calendar": "^3.1.2",
-    "zod": "^3.24.2"
+    "tailwindcss": "^4.1.18",
+    "zod": "^4.2.1"
+  },
+  "overrides": {
+    "@tiptap/core": "3.14.0",
+    "@tiptap/pm": "3.14.0",
+    "@tiptap/extension-drag-handle": "3.14.0"
   }
 }

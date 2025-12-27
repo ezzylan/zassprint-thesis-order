@@ -1,8 +1,7 @@
 import { useDateFormat, useNow } from "@vueuse/core";
 import { capitalCase } from "change-case";
 import { addMonths } from "date-fns";
-import { z } from "zod";
-import { thesisOrderSchema } from "~/utils/schema";
+import type { FetchError } from "ofetch";
 
 const now = useNow();
 
@@ -10,7 +9,7 @@ const countExistingOrders = async () => {
   const thisMonth = useDateFormat(now, "YYYY-MM").value;
   const nextMonth = useDateFormat(addMonths(now.value, 1), "YYYY-MM").value;
 
-  const data = await useDrizzle()
+  const data = await db
     .select({ order_no: tables.thesisOrders.orderNo })
     .from(tables.thesisOrders)
     .orderBy(tables.thesisOrders.createdAt)
@@ -26,32 +25,29 @@ const countExistingOrders = async () => {
     : (Number(data?.pop()?.order_no) + 1).toString();
 };
 
-const insertDatabase = async (
-  data: z.output<typeof thesisOrderSchema>,
-  orderNo: string,
-) => {
-  await useDrizzle()
-    .insert(tables.thesisOrders)
-    .values({
-      name: capitalCase(data.name),
-      phoneNumber: data.phoneNumber,
-      matrixNumber: data.matrixNumber,
-      thesisType: data.thesisType,
-      coverColor: data.coverColor,
-      thesisTitle: data.thesisTitle,
-      faculty: data.faculty,
-      year: data.year,
-      studyAcronym: data.studyAcronym,
-      colorPages: data.colorPages,
-      blackWhitePages: data.blackWhitePages,
-      copies: data.copies,
-      cdLabel: data.cdLabel,
-      cdCopies: data.cdCopies,
-      collectionDate: data.collectionDate.toISOString(),
-      collectionMethod: data.collectionMethod,
-      address: data.address,
-      orderNo: orderNo,
-    });
+const insertDatabase = async (data: PostThesisOrder, orderNo: string) => {
+  const queryValues: InsertThesisOrder = {
+    name: capitalCase(data.name),
+    phoneNumber: data.phoneNumber,
+    matrixNumber: data.matrixNumber,
+    thesisType: data.thesisType,
+    coverColor: data.coverColor,
+    thesisTitle: data.thesisTitle,
+    faculty: data.faculty,
+    year: data.year,
+    studyAcronym: data.studyAcronym,
+    colorPages: data.colorPages,
+    blackWhitePages: data.blackWhitePages,
+    copies: data.copies,
+    cdLabel: data.cdLabel,
+    cdCopies: data.cdCopies,
+    collectionDate: data.collectionDate,
+    collectionMethod: data.collectionMethod,
+    address: data.address,
+    orderNo,
+  };
+
+  await db.insert(tables.thesisOrders).values(queryValues);
 };
 
 const { telegramBotApiToken } = useRuntimeConfig();
@@ -73,15 +69,14 @@ const sendTeleBotAlert = async (orderNo: string, name: string) => {
         body: bodyContent,
       },
     );
-  } catch (error) {
+  } catch (err) {
+    const error = err as FetchError;
     console.error("Error sending Telegram alert:", error);
   }
 };
 
 export default defineEventHandler(async (event) => {
-  const result = await readValidatedBody(event, (body) =>
-    thesisOrderSchema.parse(body),
-  );
+  const result = await readBody<PostThesisOrder>(event);
 
   const orderNo = await countExistingOrders();
 
