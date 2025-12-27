@@ -6,11 +6,10 @@ export { and, desc, eq, gte, lt } from "drizzle-orm";
 
 export const tables = schema;
 
-export function useDrizzle() {
-  const client = neon(process.env.DATABASE_URL!);
-  return drizzle({ client });
-}
+const { databaseUrl } = useRuntimeConfig();
+
+export const db = drizzle({ client: neon(databaseUrl) });
 
 export type InsertThesisOrder = typeof schema.thesisOrders.$inferInsert;
+export type PostThesisOrder = Omit<InsertThesisOrder, "orderNo">;
 export type SelectThesisOrder = typeof schema.thesisOrders.$inferSelect;
-export type SelectPrice = typeof schema.prices.$inferSelect;

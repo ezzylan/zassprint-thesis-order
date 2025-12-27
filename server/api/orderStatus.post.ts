@@ -1,8 +1,13 @@
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event);
+  await requireUserSession(event);
 
-  await useDrizzle()
+  const { orderNo, status } = await readValidatedBody(
+    event,
+    updateOrderStatusSchema.parse,
+  );
+
+  await db
     .update(tables.thesisOrders)
-    .set({ status: body.newStatus })
-    .where(eq(tables.thesisOrders.orderNo, body.orderNo));
+    .set({ status })
+    .where(eq(tables.thesisOrders.orderNo, orderNo));
 });

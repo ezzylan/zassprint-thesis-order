@@ -1,5 +1,5 @@
 export default defineEventHandler(async () => {
-  return await useDrizzle()
+  return await db
     .select({ name: tables.prices.name, amount: tables.prices.amount })
     .from(tables.prices);
 });
